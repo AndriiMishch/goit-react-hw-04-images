@@ -1,64 +1,42 @@
-import { Component } from 'react';
-import PropTypes from 'prop-types';
-import { toast } from 'react-toastify';
-import { GoSearch } from 'react-icons/go';
-import {
-  SearchBar,
-  SearchForm,
-  SearchFormButton,
-  SearchFormInput,
-} from './Searchbar.styled';
+import React, { useState } from 'react';
+import css from './Searchbar.module.css';
+import { AiOutlineSearch } from 'react-icons/ai';
 
-export default class Searchbar extends Component {
-  state = {
-    searchValue: '',
+const SearchBar = ({ onSubmit }) => {
+  const [value, setValue] = useState('');
+
+  const handleChange = e => {
+    setValue(e.target.value.trim());
   };
 
-  static propTypes = {
-    onSubmit: PropTypes.func.isRequired,
+  const handleSubmit = e => {
+    e.preventDefault();
+
+    onSubmit(value);
+    setValue('');
   };
 
-  onInputChange = evt => {
-    this.setState({
-      searchValue: evt.currentTarget.value,
-    });
-  };
+  return (
+    <>
+      <header className={css.searchbar} onSubmit={handleSubmit}>
+        <form className={css.SearchForm}>
+          <button type="submit" className={css['SearchForm-button']}>
+            <AiOutlineSearch className={css['SearchForm-button-label']} />
+          </button>
 
-  onFormSubmit = evt => {
-    const { searchValue } = this.state;
-    evt.preventDefault();
-
-    if (!searchValue.trim()) {
-      return toast.error('Sorry... Your input is invalid', {
-        autoClose: 2500,
-        pauseOnHover: false,
-      });
-    }
-
-    this.props.onSubmit(searchValue.trim());
-    this.setState({ searchValue: '' });
-  };
-
-  render() {
-    const { searchValue } = this.state;
-
-    return (
-      <SearchBar>
-        <SearchForm onSubmit={this.onFormSubmit}>
-          <SearchFormButton>
-            <GoSearch size="24" />
-          </SearchFormButton>
-
-          <SearchFormInput
+          <input
+            onChange={handleChange}
+            value={value}
+            className={css['SearchForm-input']}
             type="text"
             autoComplete="off"
             autoFocus
             placeholder="Search images and photos"
-            value={searchValue}
-            onChange={this.onInputChange}
           />
-        </SearchForm>
-      </SearchBar>
-    );
-  }
-}
+        </form>
+      </header>
+    </>
+  );
+};
+
+export default SearchBar;
